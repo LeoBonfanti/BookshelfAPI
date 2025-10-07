@@ -6,13 +6,22 @@ import (
 	"BookShelfAPI/repository"
 	"BookShelfAPI/routes"
 	"BookShelfAPI/usecase"
+	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 
+	err := godotenv.Load()
+
+	if err != nil {
+		log.Fatalf("ERROR loading .env")
+	}
+
 	dbConnection, err := db.ConnectDB()
+
 	if err != nil {
 		panic(err)
 	}
