@@ -3,22 +3,17 @@ package main
 import (
 	"BookShelfAPI/controller"
 	"BookShelfAPI/db"
+	"BookShelfAPI/initializers"
 	"BookShelfAPI/repository"
 	"BookShelfAPI/routes"
 	"BookShelfAPI/usecase"
-	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
 
-	err := godotenv.Load()
-
-	if err != nil {
-		log.Fatalf("ERROR loading .env")
-	}
+	initializers.LoadEnvVariables()
 
 	dbConnection, err := db.ConnectDB()
 
@@ -29,8 +24,8 @@ func main() {
 	UserRepository := repository.NewUserRepository(dbConnection)
 	UserUseCase := usecase.NewUserUseCase(UserRepository)
 	UserController := controller.NewUserController(UserUseCase)
-
 	server := gin.Default()
+
 	routes.SetupRoutes(server, UserController)
 
 	server.Run(":8080")
