@@ -1,12 +1,8 @@
 package main
 
 import (
-	"BookShelfAPI/controller"
-	"BookShelfAPI/db"
 	"BookShelfAPI/initializers"
-	"BookShelfAPI/repository"
 	"BookShelfAPI/routes"
-	"BookShelfAPI/usecase"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,18 +11,12 @@ func main() {
 
 	initializers.LoadEnvVariables()
 
-	dbConnection, err := db.ConnectDB()
-
-	if err != nil {
-		panic(err)
-	}
-
-	UserRepository := repository.NewUserRepository(dbConnection)
-	UserUseCase := usecase.NewUserUseCase(UserRepository)
-	UserController := controller.NewUserController(UserUseCase)
+	UserController := initializers.UserInitializer()
+	LoginController := initializers.LoginInitializer()
 	server := gin.Default()
 
-	routes.SetupRoutes(server, UserController)
+	routes.SetupRouteUsers(server, UserController)
+	routes.SetupRouteLogin(server, LoginController)
 
 	server.Run(":8080")
 }

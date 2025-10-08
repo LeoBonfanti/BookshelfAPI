@@ -4,6 +4,8 @@ import (
 	"BookShelfAPI/model"
 	"database/sql"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository struct {
@@ -50,15 +52,22 @@ func (ur *UserRepository) CreateUser(user model.User) (int, error) {
 
 	var id int
 	query, err := ur.connection.Prepare("INSERT INTO users" +
-		"(user_name, email)" +
-		" VALUES ($1, $2) RETURNING id")
+		"(user_name, email, password)" +
+		" VALUES ($1, $2, $3) RETURNING id")
 
 	if err != nil {
 		fmt.Println(err)
 		return 0, err
 	}
 
-	err = query.QueryRow(user.Name, user.Email).Scan(&id)
+	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	err = query.QueryRow(user.Name, user.Email, hash).Scan(&id)
 
 	if err != nil {
 		fmt.Println(err)
@@ -95,7 +104,7 @@ func (ur *UserRepository) DeleteUser(id_user int) (int, error) {
 
 func (ur *UserRepository) GetUserById(id_user int) (*model.User, error) {
 
-	query, err := ur.connection.Prepare("SELECT * FROM users WHERE id = $1")
+	query, err := ur.connection.Prepare("SELECT id, user_name, email FROM users WHERE id = $1")
 
 	if err != nil {
 		fmt.Println(err)

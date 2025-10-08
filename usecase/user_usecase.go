@@ -39,6 +39,7 @@ func (uu *UserUseCase) DeleteUser(id_user int) (int, error) {
 	if err != nil {
 		return 0, err
 	}
+
 	if deleted == 0 {
 		return 0, nil
 	}

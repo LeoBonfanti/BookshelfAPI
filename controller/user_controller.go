@@ -36,8 +36,14 @@ func (u *UserController) CreateUser(ctx *gin.Context) {
 	var user model.User
 	err := ctx.BindJSON(&user)
 
+	if user.Email == "" || user.Name == "" || user.Password == "" {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "EMPTY VALUES"})
+		return
+	}
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, err)
+		return
 	}
 
 	insertedUser, err := u.userUseCase.CreateUser(user)
@@ -47,7 +53,12 @@ func (u *UserController) CreateUser(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, insertedUser)
+	var userResponse model.UserResponse
+	userResponse.Email = insertedUser.Email
+	userResponse.Name = insertedUser.Name
+	userResponse.ID = insertedUser.ID
+
+	ctx.JSON(http.StatusCreated, userResponse)
 }
 
 func (u *UserController) DeleteUser(ctx *gin.Context) {
