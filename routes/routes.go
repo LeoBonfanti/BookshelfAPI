@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"BookShelfAPI/auth"
 	"BookShelfAPI/controller"
 
 	"github.com/gin-gonic/gin"
@@ -8,11 +9,13 @@ import (
 
 func SetupRouteUsers(router *gin.Engine, userController *controller.UserController) {
 
-	users := router.Group("/users")
+	protected := router.Group("/")
+	protected.Use(auth.ValidateTokenMiddleware())
+
+	users := protected.Group("/users")
 	{
 		users.GET("/", userController.GetUsers)
 		users.POST("/", userController.CreateUser)
-
 		users.GET("/:userId", userController.GetUserById)
 		users.PUT("/:userId", userController.EditUser)
 		users.DELETE("/:userId", userController.DeleteUser)

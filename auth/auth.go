@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -34,12 +35,13 @@ func ValidateToken(c *gin.Context) (*jwt.Token, error) {
 
 	tokenString := c.GetHeader("Authorization")
 	if tokenString == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "NULL TOKEN"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "UNAUTHORIZED"})
 		c.Abort()
-		return nil, fmt.Errorf("NULL TOKEN")
+		return nil, fmt.Errorf("UNAUTHORIZED")
 	}
 
-	if len(tokenString) > 7 && tokenString[:7] == "Bearer " {
+	tokenString = strings.TrimSpace(tokenString)
+	if strings.HasPrefix(strings.ToLower(tokenString), "bearer ") {
 		tokenString = tokenString[7:]
 	}
 
@@ -51,9 +53,9 @@ func ValidateToken(c *gin.Context) (*jwt.Token, error) {
 	})
 
 	if err != nil || !token.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "INVALID TOKEN"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "UNAUTHORIZED"})
 		c.Abort()
-		return nil, fmt.Errorf("INVALID TOKEN")
+		return nil, fmt.Errorf("UNAUTHORIZED")
 	}
 
 	return token, nil

@@ -15,7 +15,7 @@ func NewUserUseCase(repo repository.UserRepository) UserUseCase {
 	}
 }
 
-func (uu *UserUseCase) GetUsers() ([]model.User, error) {
+func (uu *UserUseCase) GetUsers() ([]model.UserResponse, error) {
 	return uu.repository.GetUsers()
 }
 

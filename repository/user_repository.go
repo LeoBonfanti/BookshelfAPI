@@ -18,17 +18,18 @@ func NewUserRepository(connection *sql.DB) UserRepository {
 	}
 }
 
-func (ur *UserRepository) GetUsers() ([]model.User, error) {
+func (ur *UserRepository) GetUsers() ([]model.UserResponse, error) {
 
 	query := "SELECT id, user_name, email FROM users ORDER BY id"
 	rows, err := ur.connection.Query(query)
+
 	if err != nil {
 		fmt.Println(err)
-		return []model.User{}, err
+		return []model.UserResponse{}, err
 	}
 
-	var userList []model.User
-	var userObj model.User
+	var userList []model.UserResponse
+	var userObj model.UserResponse
 
 	for rows.Next() {
 		err = rows.Scan(
@@ -37,7 +38,7 @@ func (ur *UserRepository) GetUsers() ([]model.User, error) {
 			&userObj.Email)
 		if err != nil {
 			fmt.Println(err)
-			return []model.User{}, err
+			return []model.UserResponse{}, err
 		}
 
 		userList = append(userList, userObj)

@@ -25,7 +25,8 @@ func (u *UserController) GetUsers(ctx *gin.Context) {
 	users, err := u.userUseCase.GetUsers()
 
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 
 	ctx.JSON(http.StatusOK, users)
